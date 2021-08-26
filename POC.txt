@@ -1,0 +1,30 @@
+Simuler une économie complète
+
+Il y a 2 pays : Canada et Japon
+les deux ont un seul habitant
+au canada, on produit de l'eau, au japon, il produise du pain
+
+présentement, les ressources naturelles permet au Canadien de créer 2L d'eau par jour, et pour le Japonais, 4 miches de pain par jour indéfiniment.
+
+Les deux veulent échanger des biens pour assurer leur survie.
+
+En plus du canadien et du japonais, il y a 2 banques centrales : celle canadienne et celle japonaise. Il y a aussi 2 devies.
+
+généralement (pour l'instant), les humains ont besoin de 1L d'eau par jour pour survivre et de 2 miches de pain, sans quoi ils meurent la journée même.
+
+donc à chaque jour, le canadien échange 1L d'eau contre 2 miches de pain au japonais et tout le monde est heureux.
+
+la monnaie n'existe pas encore à ce jour.
+
+
+
+
+
+
+
+
+
+*** améliorations pour le futur 
+
+(faire des graphs de cout de renonciation)
+(faire des trucs de stocks et IPO les compagnies d'eau et de pain)
