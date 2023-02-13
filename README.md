@@ -5,6 +5,6 @@ This will include simulating inflation, monetary policy, productivity increase, 
 # todo
 faire une monnaie avec une banque centrale qui peut en imprimer
 faire différents pays avec différentes monnaies
-M1, M2 money supply. Paying with credits, making loans.
+M1, M2 money supply. Paying with credits, making loans, fractionnal banking system.
 
 
