@@ -1,50 +1,10 @@
 import math
 from math import log
 from classes import seq
-#j'ai une fonction du style F(a,b,c)=f(a)+g(b)+h(c) que je veux maximiser
 
-#exemple
-#f(a)=5ln(a-h)
-#g(b)=1ln(b-h)
-#h(c)=0.8ln(c-h)
-#i(d)=0.2ln(d-h)
-#...
+#U = k * (c2^(-Q)-c1^(-Q))
 
-#avec 24h, 0<=b<=24/12, 0<=c<=24/8, 0<=d<=24/4, 0 <= 12b+8c+4d <= 24
-
-#a b c et d sont les keys de bonheur dans Person
-# b c et d sont les keys de bonheur sauf "temps"
-
-#on utilise toujours tout notre 24h
-#a=24-b*12-c*8-4d
-
-#point initial a=24, b=0, c=0, d=0
-
-#F=5ln(24-12b-8c-4d + 1) + 1ln(b + 1) + 0.8ln(c + 1) + 0.2ln(d+1)
-
-#maximiser d'abord sur les frontières
-
-#0=12b+8c+4d
-#b=0, c=0, d=0
-#F=5ln(24.01) + 1ln(1) + 0.8ln(1) + 0.2ln(1)
-#F=
-
-#ensuite 2e frontière
-#24=12b+8c+4d
-#12b=24-8c-4d
-#F=5ln(1) + 1ln((24-8c-4d)/12 + 1) + 0.8ln(c + 1) + 0.2ln(d+1)
-#dF/dc=1/((24-8c-4d)/12 + 1)*-8/12 + 0.8/(c+1)
-#dF/dd...
-
-#ensuite aucune frontière
-#F=5ln(24-12b-8c-4d + 1) + 1ln(b + 1) + 0.8ln(c + 1) + 0.2ln(d+1)
-#dF/db
-#dF/dc
-#dF/dd
-
-
-
-def marginal_util_optim(prices, k, c, constrs, libre, p, n, consum):
+def marginal_util_optim(prices, k, c1, c2, constrs, libre, p, n, consum):
     quantities = [0] * len(prices)
     marginal_util = [None] * len(prices)
     keep_considering = [True] * len(prices)
@@ -55,13 +15,16 @@ def marginal_util_optim(prices, k, c, constrs, libre, p, n, consum):
         for i in range(len(prices)):
             if keep_considering[i]:
                 if consum[i]:
-                    marginal_util[i] = k[i] * math.log(c[i]) / c[i] ** quantities[i] / prices[i]
+                    marginal_util[i] = k[i] * (math.log(c1[i]) / (c1[i] ** quantities[i]) - math.log(c2[i]) / (c2[i] ** quantities[i])) / prices[i]
                 else:
-                    marginal_util[i] = k[i] * math.log(c[i]) / c[i] ** sum(quantities[(math.floor(i/n) * n):((math.floor(i/n)+1) * n)]) / prices[i]
+                    Q = sum(quantities[(math.floor(i/n) * n):((math.floor(i/n)+1) * n)])
+                    marginal_util[i] = k[i] * (math.log(c1[i]) / c1[i] ** Q -
+                                               math.log(c2[i]) / c2[i] ** Q) / prices[i]
 
+        if max(marginal_util) == 0:
+            break
         which=marginal_util.index(max(marginal_util))
         quantities[which] += 1
-
         if not constrs(prices, quantities, libre, p, n):
             quantities[which] -= 1
             marginal_util[which] = 0

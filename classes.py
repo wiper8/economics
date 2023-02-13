@@ -56,7 +56,6 @@ class Exchange:
             if Q > 0:
                 for i in range(Q):
                     if biens in self.entities[self.markets[biens].sells[i][0]].biens.keys():
-
                         if self.entities[self.markets[biens].buys[i][0]].money >= p and self.entities[self.markets[biens].sells[i][0]].biens[biens] >= 1:
                             #la transaction peut avoir lieu
                             self.entities[self.markets[biens].buys[i][0]].money -= p
@@ -97,69 +96,39 @@ class Exchange:
 
 
 class Person:
-    def __init__(self, id, travail_level=0, best="manuel", money = 0, biens = {}, utility_fun = {}, alpha=1):
+    def __init__(self, id, metier, money = 0, biens = {}, utility_fun = {}, propensity_saving=1):
         self.id = id
+        self.metier = metier
         self.money = money
-        self.travail_level = travail_level
-        self.best = best
-        self.stocks = {}
         self.biens = biens.copy()
+        self.biens[metier] = 0
         self.utility_fun = utility_fun.copy()
-        self.alpha = alpha
+        self.propensity_saving = propensity_saving
         self.utility = 0
         self.biens[str("Travail")] = 24
+
+    def new_day(self):
+        self.biens["Travail"] = 24
 
     def order(self, exchange, ticker, quantity, limit="at market", buy=True):
         exchange.markets[ticker].add_order(self.id, quantity, limit, buy)
 
     def consume(self):
         self.utility = 0
-        for k in list(set(self.utility_fun.keys())-set("Travail")):
+        for k in list(set(self.utility_fun.keys()) - set("Travail")):
             if k in self.biens.keys():
-                self.utility += self.utility_fun[k]["k"] * (1 - self.utility_fun[k]["c"] ** (-self.biens[k]))
+                self.utility += self.utility_fun[k]["k"] * (self.utility_fun["temps libre"]["c2"] ** (-self.biens["Travail"]) - self.utility_fun[k]["c1"] ** (-self.biens[k]))
                 if self.utility_fun[k]["consommer"]:
                     self.biens[k] = 0
-        self.utility += self.utility_fun["temps libre"]["k"] * (1 - self.utility_fun["temps libre"]["c"] ** (-self.biens["Travail"]))
+        self.utility += self.utility_fun["temps libre"]["k"] * (
+                    self.utility_fun["temps libre"]["c2"] ** (-self.biens["Travail"]) - self.utility_fun["temps libre"]["c1"] ** (-self.biens["Travail"]))
         if self.utility_fun["temps libre"]["consommer"]:
             self.biens["Travail"] = 0
 
-
-    def new_day(self):
-        self.biens["Travail"] = 24
-
     def __str__(self):
-        return f'ID : {self.id}\nMoney : {self.money:.2f}\nStocks : {self.stocks}'
-
-class Compagnie:
-    def __init__(self, id, production, ticker, money=100, shareholders={}):
-        self.id = id
-        self.production = production
-        self.biens = {production : 0}
-        self.ticker = ticker
-        self.shareholders = shareholders.copy()
-        self.nshares = sum(self.shareholders.values())
-        self.money = money
-        self.money_debut_jour  = self.money
-
-    def order(self, exchange, ticker, quantity, limit="at market", buy=True):
-        exchange.markets[ticker].add_order(self.id, quantity, limit, buy)
-
-    def new_day(self):
-        self.money_debut_jour = self.money
-
-    def __str__(self):
-        return f'ID : {self.id}\nProduit : {self.biens}\nTicker : {self.ticker}\nMoney : {self.money:.2f}'
+        return f'ID : {self.id}\nMoney : {self.money:.2f}'
 
 
-class Gov:
-    def __init__(self):
-        self.money=0
-        self.bonds=[]
-
-class Fed:
-    def __init__(self):
-        self.bonds = []
-        self.rate = 0
 
 class Market:
     def __init__(self, last_price=None):
